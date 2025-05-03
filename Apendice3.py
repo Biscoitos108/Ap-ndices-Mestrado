@@ -1,11 +1,12 @@
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Dropout, BatchNormalization
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.regularizers import l1_l2
-from tensorflow.keras.optimizers import SGD, Adam
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.layers import SpatialDropout2D
+from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.layers import GlobalAveragePooling2D
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -32,39 +33,38 @@ resize_images('D:/Users/Estevaos108/Desktop/Estevao Files/Imagens de Treino')
 resize_images('D:/Users/Estevaos108/Desktop/Estevao Files/Imagens de Validacao')
 
 # rodar se já tiver modelo pré-treinado:
-loaded_model = tf.keras.models.load_model('D:/Users/Estevaos108/Desktop/Estevao Files/modelo/best_weights.h5')
+loaded_model = tf.keras.models.load_model('D:/Users/Estevaos108/Desktop/Estevao Files/modelo/best_model.keras')
 
 model = Sequential([
-    Conv2D(32, (3,3), activation='relu', input_shape=(180,180,3)),
+    # Bloco 1 - Input
+    Conv2D(32, (5,5), activation='relu', input_shape=(180,180,3),
+           kernel_regularizer=l1_l2(l1=1e-5, l2=9e-5)),
     BatchNormalization(),
-    Conv2D(32, (3,3), activation='relu'),
-    BatchNormalization(),
+    SpatialDropout2D(0.3),
     MaxPooling2D(2,2),
-    Dropout(0.5),
-    Conv2D(64, (3,3), activation='relu'),
+    
+    # Bloco 2
+    Conv2D(128, (3,3), activation='relu',
+           kernel_regularizer=l1_l2(l1=1e-5, l2=9e-5)),
     BatchNormalization(),
-    Conv2D(64, (3,3), activation='relu'),
-    BatchNormalization(),
-    MaxPooling2D(2,2),
-    Dropout(0.5),
-    Conv2D(128, (3,3), activation='relu'),
-    BatchNormalization(),
-    GlobalAveragePooling2D(),  # Substitui o Flatten
-    Dense(100, activation='relu', kernel_regularizer=l1_l2(l1=1e-4, l2=1e-4)),
-    Dropout(0.3),
+    GlobalAveragePooling2D(),
+    
+    # Classificador
+    Dense(64, activation='relu', kernel_regularizer=l1_l2(l1=1e-5, l2=9e-5)),
+    Dropout(0.6),
     Dense(1, activation='sigmoid')
 ])
+
 model.summary()
 
-# Otimizador e compilação do modelo
-optimizer = Adam(learning_rate=1.61e-6)
+optimizer = Adam(learning_rate=2e-6)
 model.compile(loss="binary_crossentropy", optimizer=optimizer, metrics=['acc'])
 
 # Callbacks
-#earlystop = EarlyStopping(monitor='val_acc', patience=10, restore_best_weights=True)
-checkpoint = ModelCheckpoint(filepath='best_weights.h5', save_best_only=True, save_weights_only=True)
-reduce_lr = ReduceLROnPlateau(monitor='val_acc', factor=0.5, patience=3, min_lr=1.61e-8, verbose=1)
-callbacks = [checkpoint, reduce_lr]
+earlystop = EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True, verbose=1)
+checkpoint = ModelCheckpoint('best_model.keras', monitor='val_loss', save_best_only=True)
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, min_lr=1e-7, verbose=1)
+callbacks = [checkpoint, earlystop, reduce_lr]
 
 # Geradores de dados com aumento
 datagen_train = ImageDataGenerator(
@@ -72,6 +72,7 @@ datagen_train = ImageDataGenerator(
     rotation_range=20,
     width_shift_range=0.2,
     height_shift_range=0.2,
+    brightness_range=[0.8,1.2],
     shear_range=0.2,
     zoom_range=0.2,
     horizontal_flip=True,
@@ -101,14 +102,13 @@ validation_steps = int(np.ceil(validation_generator.n / float(validation_generat
 history = model.fit(
     train_generator,
     steps_per_epoch=steps_per_epoch,
-    epochs=100,
+    epochs=300,
     validation_data=validation_generator,
     validation_steps=validation_steps,
     callbacks=callbacks,
-    verbose=1,
-    workers=4,
-    use_multiprocessing=False
+    verbose=1
 )
+
 
 print("Média do Loss de Treino:", np.mean(history.history['loss']))
 
@@ -126,4 +126,12 @@ plt.xlabel('Epochs')
 plt.legend(['Treino', 'Validação'], loc='lower right')
 plt.show()
 
-model.save('D:/Users/Estevaos108/Desktop/Estevao Files/modelo/best_weights.h5') # salvando modelo
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Modelo de Perda')
+plt.ylabel('Perda')
+plt.xlabel('Epochs')
+plt.legend(['Treino', 'Validação'], loc='upper right')
+plt.show()
+
+model.save('D:/Users/Estevaos108/Desktop/Estevao Files/modelo/best_model.keras') # salvando modelo

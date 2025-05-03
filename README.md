@@ -1,19 +1,44 @@
-1.1 Objetivo Geral: Investigar a viabilidade e eficácia da utilização de uma rede neural convolucional para a 
-identificação antecipada da cigarrinha-de-pastagem em imagens de pastagens. 
+**ChartSens - Detecção de Cigarrinha-de-Pastagem usando CNN**
 
-1.2 Objetivos Específicos: 1. Coletar e preparar um conjunto de dados de imagens de pastagens com e sem 
-Infestação por cigarrinhas para o treinamento da CNN.
-2. Desenvolver e treinar uma CNN utilizando técnicas de aprendizado supervisionado para reconhecer padrões 
-associados à presença da cigarrinha-de-pastagem.
-3. Avaliar a precisão e eficácia da CNN na identificação da cigarrinha-de-pastagem em imagens de pastagens reais sob 
-diferentes condições ambientais.
-4. Investigar os potenciais efeitos da infestação por cigarrinhas na qualidade nutricional, sensorial e econômica da 
-carne bovina. 
+Descrição
+  Sistema de identificação automatizada de cigarrinha-de-pastagem (Homoptera: Cercopidae) utilizando Redes Neurais Convolucionais (CNN) para auxiliar no manejo integrado de pragas em pastagens.
 
-1.3 Resultados Esperados: Espera-se que este estudo tenha importantes resultados, contribuindo significativamente 
-para o desenvolvimento de técnicas de monitoramento e controle de pragas em pastagens. A utilização da CNN para a 
-identificação antecipada da cigarrinha-de-pastagem pode fornecer uma ferramenta valiosa para produtores e 
-pesquisadores, permitindo intervenções rápidas e eficazes para mitigar os danos causados pela praga. Além disso, os 
-resultados obtidos ajudarão a aumentar a compreensão dos efeitos da infestação por cigarrinhas na qualidade da carne 
-bovina. Essas informações serão fundamentais para a tomada de decisões relacionadas à produção pecuária, visando 
-não apenas a redução de perdas econômicas, mas também a garantia da qualidade do produto para o consumidor. 
+Objetivo
+  Desenvolver e validar uma CNN para identificação precoce da cigarrinha-de-pastagem em imagens de pastagens, disponibilizando uma ferramenta acessível e eficaz para produtores rurais através de um aplicativo mobile.
+
+Funcionalidades
+  Data augmentation para expansão do banco de imagens
+  Redimensionamento e padronização de imagens (224x224 pixels)
+  Treinamento otimizado de CNN com prevenção de overfitting
+  Interface mobile para análise de imagens em campo
+  Geração de relatórios em PDF com resultados das análises
+  
+Resultados Alcançados
+  Acurácia de 96,30% no conjunto de treinamento
+  95,72% de precisão no conjunto de validação
+  Área sob a curva ROC de 0,92
+  80% de precisão em testes com imagens reais
+  Registro de software no INPI (BR512025001184-9)
+  
+Tecnologias Utilizadas
+  Python
+  TensorFlow/Keras
+  Kotlin (aplicativo Android)
+  Técnicas de Deep Learning
+  Processamento de Imagens
+  
+Instalação e Uso
+  O aplicativo ChartSens NÃO está disponível na Play Store (AINDA...)
+  Capture ou selecione imagens de pastagens
+  Utilize a função de análise para identificação da cigarrinha
+  Gere e compartilhe relatórios das análises
+  
+Contribuições
+  Projeto desenvolvido como parte de pesquisa de mestrado, com apoio da FAPEG.
+
+Licença
+  Registrado no INPI sob número BR512025001184-9
+
+Contato
+  Estêvão Santos Cavalcante
+  email: estevaos.108@gmail.com

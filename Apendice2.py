@@ -1,7 +1,7 @@
 import cv2
 import os
 
-def process_image(input_path, output_path, size=(224, 224), format='png'):
+def process_image(input_path, output_path, size=(180, 180), format='png'):
     image = cv2.imread(input_path)
     if image is None:
         print(f"Erro ao ler a imagem {input_path}")
